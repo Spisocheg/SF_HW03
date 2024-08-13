@@ -1,0 +1,75 @@
+{% extends 'default.html' %}
+
+{% load censor_filter %}
+
+{% block title %}
+    Новости
+{% endblock title %}
+
+{% block search %}
+    <div class="my-3 d-flex justify-content-center">
+    <form action="{% url 'search' %}" method="get" class="form" style="width: 50em;">
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <input class="form-control" type="text" name="title" value="{{ title|extract_title }}" placeholder="Заголовок...">
+            </div>
+            <div class="col-3">
+                <select class="form-control" name="cat">
+                        <option value="">---------</option>
+                {% for c in categories %}
+                    {% if c.categoryName in cat %}
+                        <option value="{{ c.categoryName }}" selected="selected">{{ c.categoryName }}</option>
+                    {% else %}
+                        <option value="{{ c.categoryName }}">{{ c.categoryName }}</option>
+                    {% endif %}
+                {% endfor %}
+                </select>
+            </div>
+            <div class="col-3">
+                <input class="form-control" type="datetime-local" name="date" value="{{ date|extract_date:default }}">
+            </div>
+            <div class="col-2">
+                <input class="form-control" type="submit" value="Найти">
+            </div>
+        </div>
+    </form></div>
+{% endblock search %}
+
+{% block content %}
+    {% for n in news %}
+        <div class="d-flex justify-content-center my-3">
+            <div class="card shadow-sm" style="width: 50rem;">
+                <div class="card-header d-flex justify-content-between bg-dark-subtle">
+                    <h3 class="card-title">{{ n.title|censor }}</h3>
+                    <p class="card-subtitle opacity-75 mt-2">{{ n.creationDate|date:"d.m.Y, h:i" }}</p>
+                </div>
+                <div class="card-body">
+                    <p class="card-text fs-5">{{ n.preview|censor }}</p>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <a class="card-link text-dark" href="{{ n.get_absolute_url }}">Читать далее...</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="d-flex justify-content-center mx-auto bg-body-secondary rounded-2 align-items-center" style="width: 10rem; height: 2rem;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="fs-6 text-dark p-1">1</a>
+            {% if page_obj.previous_page_number != 1 %}
+            <p class="fs-6 text-dark mt-3">...</p>
+            <a href="?page={{ page_obj.previous_page_number }}" class="fs-6 text-dark p-1">{{ page_obj.previous_page_number }}</a>
+            {% endif %}
+        {% endif %}
+
+        <p class="fs-6 text-dark m-0 mx-2 px-1 text-bg-secondary rounded-1 h-75 bg-opacity-50">{{ page_obj.number }}</p>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="fs-6 text-dark p-1">{{ page_obj.next_page_number }}</a>
+            {% if paginator.num_pages != page_obj.next_page_number %}
+            <p class="fs-6 text-dark mt-3">...</p>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="fs-6 text-dark p-1">{{ page_obj.paginator.num_pages }}</a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock content %}

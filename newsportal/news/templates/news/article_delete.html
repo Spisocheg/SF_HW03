@@ -1,0 +1,15 @@
+{% extends 'default.html' %}
+
+{% load censor_filter %}
+
+{% block title %}
+    Удаление
+{% endblock title %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>Удалить "{{ news.title }}"?</p>
+        <input type="submit" value="Удалить" />
+    </form>
+{% endblock content %}

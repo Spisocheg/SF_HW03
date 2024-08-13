@@ -1,0 +1,24 @@
+{% extends 'default.html' %}
+
+{% load censor_filter %}
+
+{% block title %}
+    {{ news.title|censor }}
+{% endblock title %}
+
+{% block content %}
+    <div class="d-flex justify-content-center m-3">
+        <div class="card" style="width: 50rem;">
+            <div class="card-header d-flex justify-content-between bg-dark-subtle">
+                <h3 class="card-title">{{ news.title|censor }}</h3>
+                <p class="card-subtitle opacity-75 mt-2">{{ news.creationDate|date:"d.m.Y, h:i" }}</p>
+            </div>
+            <div class="card-body">
+                <p class="card-text fs-5">{{ news.text|censor }}</p>
+            </div>
+            <div class="card-footer">
+                <p class="card-text text-secondary">Author: {{ news.author.authorName.username }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
