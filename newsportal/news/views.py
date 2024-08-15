@@ -4,6 +4,7 @@ from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostNewsForm, PostArticleForm
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from datetime import datetime
 
@@ -67,12 +68,14 @@ class PostNewsDetail(DetailView):
     context_object_name = 'news'
 
 
-class PostNewsCreate(CreateView):
+class PostNewsCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     form_class = PostNewsForm
     model = Post
     template_name = 'news_create.html'
     context_object_name = 'news'
     extra_context = {'is_edit': False}
+    raise_exception = True
 
     def form_valid(self, form):
         post = form.save()
@@ -80,19 +83,23 @@ class PostNewsCreate(CreateView):
         return super().form_valid(form)
 
 
-class PostNewsEdit(UpdateView):
+class PostNewsEdit(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     form_class = PostNewsForm
     model = Post
     template_name = 'news_create.html'
     context_object_name = 'news'
     extra_context = {'is_edit': True}
+    raise_exception = True
 
 
-class PostNewsDelete(DeleteView):
+class PostNewsDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post',)
     model = Post
     template_name = 'news_delete.html'
     context_object_name = 'news'
     success_url = reverse_lazy('news_list')
+    raise_exception = True
 
 
 class PostArticlesList(ListView):
@@ -111,12 +118,14 @@ class PostArticlesDetail(DetailView):
     context_object_name = 'news'
 
 
-class PostArticlesCreate(CreateView):
+class PostArticlesCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     form_class = PostArticleForm
     model = Post
     template_name = 'article_create.html'
     context_object_name = 'news'
     extra_context = {'is_edit': False}
+    raise_exception = True
 
     def form_valid(self, form):
         post = form.save()
@@ -124,16 +133,20 @@ class PostArticlesCreate(CreateView):
         return super().form_valid(form)
 
 
-class PostArticlesEdit(UpdateView):
+class PostArticlesEdit(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     form_class = PostArticleForm
     model = Post
     template_name = 'article_create.html'
     context_object_name = 'news'
     extra_context = {'is_edit': True}
+    raise_exception = True
 
 
-class PostArticlesDelete(DeleteView):
+class PostArticlesDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post',)
     model = Post
     template_name = 'article_delete.html'
     context_object_name = 'news'
     success_url = reverse_lazy('article_list')
+    raise_exception = True

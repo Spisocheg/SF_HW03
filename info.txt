@@ -1,0 +1,9 @@
+admin - admin
+
+пользователь без группы authors:
+some@email.com - Password0_
+
+пользователь с группой authors:
+userone@email.com - Password0_
+
+* регистрация с помощью yandex проверена (успешно), данные в админке были изменены постфактум
