@@ -1,0 +1,25 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Subscriptions
+{% endblock title %}
+
+{% block content %}
+    {% for cat in cats  %}
+        <div class="text-center">
+            <p class="mt-3 mb-0">{{ cat.categoryName }}</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="cat" value="{{ cat.id }}" />
+
+                {% if cat.user_subscribed %}
+                    <button disabled>Подписаться</button>
+                    <button name="action" value="unsub">Отписаться</button>
+                {% else %}
+                    <button name="action" value="sub">Подписаться</button>
+                    <button disabled>Отписаться</button>
+                {% endif %}
+            </form>
+        </div>
+    {% endfor %}
+{% endblock content %}

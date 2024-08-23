@@ -1,12 +1,48 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Category
+from .models import Post, Category, Subscription
 from .filters import PostFilter
 from .forms import PostNewsForm, PostArticleForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import Exists, OuterRef
+
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_protect
 
 from datetime import datetime
+
+
+@login_required
+@csrf_protect
+def subscriptions(request):
+    if request.method == 'POST':
+        cat = request.POST.get('cat')
+        category = Category.objects.get(id=cat)
+        action = request.POST.get('action')
+
+        if action == 'sub':
+            Subscription.objects.create(user=request.user, category=category)
+        elif action == 'unsub':
+            Subscription.objects.filter(
+                user=request.user,
+                category=category,
+            ).delete()
+
+    categories_with_subscriptions = Category.objects.annotate(
+        user_subscribed=Exists(
+            Subscription.objects.filter(
+                user=request.user,
+                category=OuterRef('pk'),
+            )
+        )
+    ).order_by('id')
+
+    return render(
+        request,
+        'subscriptions.html',
+        {'cats': categories_with_subscriptions},
+    )
 
 
 class PostsList(ListView):
@@ -16,6 +52,16 @@ class PostsList(ListView):
     context_object_name = 'news'
     extra_context = {'categories': Category.objects.all(), 'default': datetime(1999, 12, 31, 23, 59).strftime('%Y-%m-%d %H:%M')}
     paginate_by = 10
+
+
+class PostCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
+    form_class = PostNewsForm
+    model = Post
+    template_name = 'create.html'
+    context_object_name = 'news'
+    extra_context = {'is_edit': False}
+    raise_exception = True
 
 
 class PostsSearch(ListView):
@@ -68,19 +114,19 @@ class PostNewsDetail(DetailView):
     context_object_name = 'news'
 
 
-class PostNewsCreate(PermissionRequiredMixin, CreateView):
-    permission_required = ('news.add_post',)
-    form_class = PostNewsForm
-    model = Post
-    template_name = 'news_create.html'
-    context_object_name = 'news'
-    extra_context = {'is_edit': False}
-    raise_exception = True
+# class PostNewsCreate(PermissionRequiredMixin, CreateView):
+#     permission_required = ('news.add_post',)
+#     form_class = PostNewsForm
+#     model = Post
+#     template_name = 'news_create.html'
+#     context_object_name = 'news'
+#     extra_context = {'is_edit': False}
+#     raise_exception = True
 
-    def form_valid(self, form):
-        post = form.save()
-        post.categoryType = 'News'
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     post = form.save()
+    #     post.categoryType = 'News'
+    #     return super().form_valid(form)
 
 
 class PostNewsEdit(PermissionRequiredMixin, UpdateView):
@@ -118,19 +164,19 @@ class PostArticlesDetail(DetailView):
     context_object_name = 'news'
 
 
-class PostArticlesCreate(PermissionRequiredMixin, CreateView):
-    permission_required = ('news.add_post',)
-    form_class = PostArticleForm
-    model = Post
-    template_name = 'article_create.html'
-    context_object_name = 'news'
-    extra_context = {'is_edit': False}
-    raise_exception = True
+# class PostArticlesCreate(PermissionRequiredMixin, CreateView):
+#     permission_required = ('news.add_post',)
+#     form_class = PostArticleForm
+#     model = Post
+#     template_name = 'article_create.html'
+#     context_object_name = 'news'
+#     extra_context = {'is_edit': False}
+#     raise_exception = True
 
-    def form_valid(self, form):
-        post = form.save()
-        post.categoryType = 'Article'
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     post = form.save()
+    #     post.categoryType = 'Article'
+    #     return super().form_valid(form)
 
 
 class PostArticlesEdit(PermissionRequiredMixin, UpdateView):

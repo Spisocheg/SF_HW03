@@ -8,6 +8,7 @@ class PostNewsForm(forms.ModelForm):
         fields = [
             'author',
             'postCategory',
+            'categoryType',
             'title',
             'text',
         ]
@@ -19,6 +20,7 @@ class PostArticleForm(forms.ModelForm):
         fields = [
             'author',
             'postCategory',
+            'categoryType',
             'title',
             'text',
         ]

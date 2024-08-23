@@ -10,7 +10,7 @@ url_news_current = [
 
 url_news = [
     path('', PostNewsList.as_view(), name='news_list'),
-    path('create/', PostNewsCreate.as_view(), name='news_create'),
+    # path('create/', PostNewsCreate.as_view(), name='news_create'),
     path('<int:pk>/', include(url_news_current)),
 ]
 
@@ -23,14 +23,16 @@ url_articles_current = [
 
 url_articles = [
     path('', PostArticlesList.as_view(), name='article_list'),
-    path('create/', PostArticlesCreate.as_view(), name='article_create'),
+    # path('create/', PostArticlesCreate.as_view(), name='article_create'),
     path('<int:pk>/', include(url_articles_current)),
 ]
 
 
 urlpatterns = [
     path('', PostsList.as_view(), name='posts_list'),
+    path('subscriptions/', subscriptions, name='subscriptions'),
     path('search/', PostsSearch.as_view(), name='search'),
+    path('create/', PostCreate.as_view(), name='create'),
     path('news/', include(url_news)),
     path('articles/', include(url_articles)),
 ]
