@@ -163,3 +163,8 @@ EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = "example@yandex.ru"
 
 SERVER_EMAIL = "example@yandex.ru"
+
+
+APSCHEDULER_DATETIME_FORMAT = 'N j, Y, F:s a'
+
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
